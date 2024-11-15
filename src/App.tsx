@@ -18,7 +18,7 @@ const SAMPLE_PROPERTIES = [
     beds: '1-3 BED',
     baths: '1-2 BATH',
     sqft: '665 FT²',
-    address: '100 Parkway Forest Drive, Toronto, ON'
+    address: '88 Harbour Street - Toronto, ON'
   },
   {
     images: [
@@ -32,7 +32,7 @@ const SAMPLE_PROPERTIES = [
     beds: '2 BED',
     baths: '2 BATH',
     sqft: '800 FT²',
-    address: '25 Lower Simcoe Street, Toronto, ON'
+    address: '6030 Bathurst Street - Toronto, ON'
   }
 ];
 
