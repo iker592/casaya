@@ -1,16 +1,81 @@
-import React from 'react';
-import { MapPin } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
+
+// Get API key from environment variable
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS;
 
 export default function Map() {
-  return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50">
-        <MapPin className="h-16 w-16 text-[#5bc0de] mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Preview</h3>
-        <p className="text-gray-600 max-w-sm">
-          To enable the interactive map, please add your Google Maps API key to the Map component.
-        </p>
-      </div>
-    </div>
-  );
-}
+  const mapRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const loader = new Loader({
+      apiKey: GOOGLE_MAPS_API_KEY,
+      version: 'weekly'
+    });
+ 
+    loader.load().then(() => {
+      if (mapRef.current) {
+        const map = new google.maps.Map(mapRef.current, {
+          center: { lat: 43.6532, lng: -79.3832 }, // Toronto coordinates
+          zoom: 12,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          zoomControl: true,
+          styles: [
+            {
+              featureType: "all",
+              elementType: "labels.text.fill",
+              stylers: [{ color: "#616161" }]
+            },
+            {
+              featureType: "water",
+              elementType: "geometry",
+              stylers: [{ color: "#e9e9e9" }]
+            },
+            {
+              featureType: "landscape",
+              elementType: "geometry",
+              stylers: [{ color: "#f5f5f5" }]
+            }
+          ]
+        });
+ 
+        // Add markers for properties
+        const markers = [
+          {
+            position: { lat: 43.6532, lng: -79.3832 },
+            title: "$2529 - $3119",
+            content: "100 Parkway Forest Drive"
+          },
+          {
+            position: { lat: 43.6447, lng: -79.3890 },
+            title: "$2225+",
+            content: "25 Lower Simcoe Street" 
+          }
+        ];
+ 
+        markers.forEach(markerInfo => {
+          const marker = new google.maps.Marker({
+            position: markerInfo.position,
+            map,
+            title: markerInfo.title
+          });
+ 
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<div class="p-2">
+              <h3 class="font-bold">${markerInfo.title}</h3>
+              <p>${markerInfo.content}</p>
+            </div>`
+          });
+ 
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+        });
+      }
+    });
+  }, []);
+ 
+  return <div ref={mapRef} className="w-full h-full rounded-lg shadow-md" />;
+ }
